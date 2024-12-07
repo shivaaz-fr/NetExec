@@ -5,6 +5,11 @@ from impacket.dcerpc.v5.rpcrt import RPC_C_AUTHN_GSS_NEGOTIATE, RPC_C_AUTHN_LEVE
 
 from impacket.uuid import uuidtup_to_bin
 
+from nxc.protocols.smb.remotefile import RemoteFile
+from impacket import nt_errors
+from impacket.smb3structs import FILE_READ_DATA
+from impacket.smbconnection import SessionError
+
 
 class NXCModule:
     name = "rbcd"
@@ -41,6 +46,25 @@ class NXCModule:
             self.method = module_options["M"].lower()
 
     def on_login(self, context, connection):
+
+    	# Firstable we check if webdav client is enable on target / if not quit
+    	try:
+    		remote_file = RemoteFile(connection.conn, "DAV RPC Service", "IPC$", access=FILE_READ_DATA)
+    		remote_file.open_file()
+    		remote_file.close()
+
+    		context.log.highlight(self.output.format(connection.conn.getRemotehost()))
+
+    	except SessionError as e:
+    		if e.getErrorCode() == nt_errors.STATUS_OBJECT_NAME_NOT_FOUND
+    			return
+    		elif e.getErrorCode() in nt_errors.ERROR_MESSAGES:
+    			context.log.fail(f"Error enumerating WebDAV: {e.getErrorString()[0]}", color="magenta")
+    		else:
+    			raise e
+
+    	# We assume webdav client is enable on target, we can continue with coerce's method check !
+
         runmethod = False
         if self.method == "all" or self.method[:1] == "d":  # DFSCoerce
             runmethod = True
