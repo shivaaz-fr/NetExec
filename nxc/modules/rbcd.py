@@ -13,7 +13,7 @@ from impacket.smbconnection import SessionError
 
 class NXCModule:
     name = "rbcd"
-    description = "Module to check RBCD requierements : Is the Target vulnerable to any coerce vulns AND is webdav client enabled. Set LISTENER IP for coercion."
+    description = "Check RBCD requierements : vulnerable to any coerce methods AND webdav client enabled. Set LISTENER IP for coercion."
     supported_protocols = ["smb"]
     opsec_safe = True
     multiple_hosts = True
@@ -53,7 +53,8 @@ class NXCModule:
             remote_file.open_file()
             remote_file.close()
 
-            context.log.highlight(self.output.format(connection.conn.getRemotehost()))
+            #context.log.highlight("RBCD requierements OK !!! WebDAV +")
+            msgOutput = "RBCD requierements OK ! WebDAV +"
 
         except SessionError as e:
             if e.getErrorCode() == nt_errors.STATUS_OBJECT_NAME_NOT_FOUND:
@@ -85,7 +86,8 @@ class NXCModule:
 
                 if dfscocerceconnect is not None:
                     context.log.debug("Target is vulnerable to DFSCoerce")
-                    context.log.highlight("VULNERABLE, DFSCoerce")
+                    #context.log.highlight("VULNERABLE, DFSCoerce")
+                    msgOutput = msgOutput + " DFSCoerce"
                     if self.listener is not None:  # exploit
                         dfscocerceclass.exploit(dfscocerceconnect, self.listener, self.always_continue, "netdfs")
                     dfscocerceconnect.disconnect()
@@ -116,7 +118,8 @@ class NXCModule:
 
                 if shadowcocerceconnect is not None:
                     context.log.debug("Target is vulnerable to ShadowCoerce")
-                    context.log.highlight("VULNERABLE, ShadowCoerce")
+                    #context.log.highlight("VULNERABLE, ShadowCoerce")
+                    msgOutput = msgOutput + " ShadowCoerce"
                     if self.listener is not None:  # exploit
                         shadowcocerceclass.exploit(shadowcocerceconnect, self.listener, self.always_continue, "Fssagentrpc")
                     shadowcocerceconnect.disconnect()
@@ -152,7 +155,8 @@ class NXCModule:
                     if petitpotamconnect is not None:
                         if reducelog:
                             context.log.debug("Target is vulnerable to PetitPotam")
-                            context.log.highlight("VULNERABLE, PetitPotam")
+                            msgOutput = msgOutput + " PetitPotam"
+                            #context.log.highlight("VULNERABLE, PetitPotam")
                             reducelog = False
                         if self.listener is not None:  # exploit TODO
                             exploit_status = petitpotamclass.exploit(petitpotamconnect, self.listener, self.always_continue, pipe)
@@ -186,7 +190,8 @@ class NXCModule:
 
                 if printerbugconnect is not None:
                     context.log.debug("Target is vulnerable to PrinterBug")
-                    context.log.highlight("VULNERABLE, PrinterBug")
+                    msgOutput = msgOutput + " Printerbug"
+                    #context.log.highlight("VULNERABLE, PrinterBug")
                     if self.listener is not None:  # exploit
                         printerbugclass.exploit(printerbugconnect, self.listener, target, self.always_continue, "spoolss")
                     printerbugconnect.disconnect()
@@ -217,7 +222,8 @@ class NXCModule:
 
                 if msevenconnect is not None:
                     context.log.debug("Target is vulnerable to MSEven")
-                    context.log.highlight("VULNERABLE, MSEven")
+                    msgOutput = msgOutput + " MSEven"
+                    #context.log.highlight("VULNERABLE, MSEven")
                     if self.listener is not None:  # exploit
                         msevenclass.exploit(msevenconnect, self.listener, self.always_continue, "eventlog")
                     msevenconnect.disconnect()
@@ -229,6 +235,7 @@ class NXCModule:
         if not runmethod:
             context.log.error("Invalid method, please check the method name.")
             return
+        context.log.highlight(msgOutput)
 
 
 class ShadowCoerceTrigger:
