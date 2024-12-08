@@ -47,24 +47,22 @@ class NXCModule:
 
     def on_login(self, context, connection):
 
-    	# Firstable we check if webdav client is enable on target / if not quit
-    	try:
-    		remote_file = RemoteFile(connection.conn, "DAV RPC Service", "IPC$", access=FILE_READ_DATA)
-    		remote_file.open_file()
-    		remote_file.close()
+        # Firstable we check if webdav client is enable on target / if not quit
+        try:
+            remote_file = RemoteFile(connection.conn, "DAV RPC Service", "IPC$", access=FILE_READ_DATA)
+            remote_file.open_file()
+            remote_file.close()
 
-    		context.log.highlight(self.output.format(connection.conn.getRemotehost()))
+            context.log.highlight(self.output.format(connection.conn.getRemotehost()))
 
-    	except SessionError as e:
-    		if e.getErrorCode() == nt_errors.STATUS_OBJECT_NAME_NOT_FOUND
-    			return
-    		elif e.getErrorCode() in nt_errors.ERROR_MESSAGES:
-    			context.log.fail(f"Error enumerating WebDAV: {e.getErrorString()[0]}", color="magenta")
-    		else:
-    			raise e
-
-    	# We assume webdav client is enable on target, we can continue with coerce's method check !
-
+        except SessionError as e:
+            if e.getErrorCode() == nt_errors.STATUS_OBJECT_NAME_NOT_FOUND:
+                return
+            elif e.getErrorCode() in nt_errors.ERROR_MESSAGES:
+                context.log.fail(f"Error enumerating WebDAV: {e.getErrorString()[0]}", color="magenta")
+            else:
+                raise e
+        # We assume webdav client is enable on target, we can continue with coerce's method check 
         runmethod = False
         if self.method == "all" or self.method[:1] == "d":  # DFSCoerce
             runmethod = True
@@ -95,8 +93,8 @@ class NXCModule:
                     context.log.debug("Target is not vulnerable to DFSCoerce")
             except Exception as e:
                 context.log.error(f"Error in DFSCoerce module: {e}")
+        
             """ DFSCOERCE END """
-
         if self.method == "all" or self.method[:1] == "s":  # ShadowCoerce
             runmethod = True
             """ ShadowCoerce START """
