@@ -652,7 +652,7 @@ class smb(connection):
         if getattr(self.args, "exec_method_explicitly_set", False):
             methods = [self.args.exec_method]
         if not methods:
-            methods = ["wmiexec", "atexec", "smbexec", "mmcexec"]
+            methods = ["atexec", "wmiexec", "smbexec", "mmcexec"]
 
         if not payload and self.args.execute:
             payload = self.args.execute
