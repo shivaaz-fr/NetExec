@@ -72,13 +72,9 @@ class TSCH_EXEC:
         xml = f"""<?xml version="1.0" encoding="UTF-16"?>
 <Task version="1.2" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task">
   <Triggers>
-    <CalendarTrigger>
-      <StartBoundary>2024-09-29T10:12:18.1178577</StartBoundary>
-      <Enabled>true</Enabled>
-      <ScheduleByDay>
-        <DaysInterval>3</DaysInterval>
-      </ScheduleByDay>
-    </CalendarTrigger>
+    <RegistrationTrigger>
+      <EndBoundary>{self.get_end_boundary()}</EndBoundary>
+    </RegistrationTrigger>
   </Triggers>
   <Principals>
     <Principal id="LocalSystem">
@@ -106,7 +102,7 @@ class TSCH_EXEC:
   </Settings>
   <Actions Context="LocalSystem">
     <Exec>
-      <Command>%WINDIR%\SyStem32\cmd.exe, </Command>
+      <Command>cmd.exe, </Command>
 """
         if self.__retOutput:
             self.__output_filename = "\\WINDOWS\\" + gen_random_string(8)
