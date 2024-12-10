@@ -102,18 +102,18 @@ class TSCH_EXEC:
   </Settings>
   <Actions Context="LocalSystem">
     <Exec>
-      <Command>cmd.exe, </Command>
+      <Command>cmd.exe     </Command>
 """
         if self.__retOutput:
-            self.__output_filename = "\\WINDOWS\\Temp\\" + gen_random_string(8)
+            self.__output_filename = "\\WINDOWS\\" + gen_random_string(10)
             if fileless:
                 local_ip = self.__rpctransport.get_socket().getsockname()[0]
-                argument_xml = f"      <Arguments>/C, {command} &gt; \\\\{local_ip}\\{self.__share_name}\\{self.__output_filename} 2&gt;&amp;1</Arguments>"
+                argument_xml = f"      <Arguments>/C,,, {command} &gt; \\\\{local_ip}\\{self.__share_name}\\{self.__output_filename} 2&gt;&amp;1</Arguments>"
             else:
-                argument_xml = f"      <Arguments>/C, {command} &gt; {self.__output_filename} 2&gt;&amp;1</Arguments>"
+                argument_xml = f"      <Arguments>/C,,, {command} &gt; {self.__output_filename} 2&gt;&amp;1</Arguments>"
 
         elif self.__retOutput is False:
-            argument_xml = f"      <Arguments>/C, {command}</Arguments>"
+            argument_xml = f"      <Arguments>/C,,, {command}</Arguments>"
 
         self.logger.debug("Generated argument XML: " + argument_xml)
         xml += argument_xml
